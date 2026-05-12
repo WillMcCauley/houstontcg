@@ -1,82 +1,10 @@
-const storeProfile = {
-  businessName: "Houston TCG",
-  assistantName: "Houston TCG Bot",
-  city: "Houston",
-  state: "Texas",
-  fulfillment: ["local meetup", "porch pickup", "shipping when arranged"],
-  paymentOptions: ["cash", "Zelle", "Cash App", "Facebook Marketplace checkout when enabled"],
-  supportTone:
-    "friendly, fast, and focused on helping buyers reach the right Facebook Marketplace listing"
+const APP_CONFIG = {
+  apiBase: window.HOUSTON_TCG_API_BASE || "http://127.0.0.1:8001",
+  fallbackCatalogPath: "backend/data/products.json",
+  productLimit: 3
 };
 
-const products = [
-  {
-    id: "outlaws-kit",
-    category: "MTG",
-    title: "Outlaws of Thunder Junction Deluxe Commander Kit",
-    description:
-      "A featured Magic: The Gathering item for players and collectors looking for a premium Commander pickup.",
-    image: "images/outlaws-of-thunder-junction-deluxe-commander-kit.jpeg",
-    fbUrl: "https://www.facebook.com/marketplace/item/1216163437111287",
-    keywords: ["mtg", "magic", "magic the gathering", "outlaws", "thunder junction", "commander", "deluxe commander kit"],
-    tags: ["cards", "collectible", "tcg", "commander"]
-  },
-  {
-    id: "iphone-14",
-    category: "Electronics",
-    title: "iPhone 14 128GB - Black",
-    description:
-      "A clean, high-demand phone listing that fits perfectly alongside collectibles and resale finds.",
-    image: "images/iphone-14-128gb-black.webp",
-    fbUrl: "https://www.facebook.com/marketplace/item/1285667683751650",
-    keywords: ["iphone", "iphone 14", "phone", "apple", "128gb", "black iphone"],
-    tags: ["electronics", "phone", "apple"]
-  },
-  {
-    id: "lego-good-fortune",
-    category: "Lego",
-    title: "Lego Good Fortune Set",
-    description:
-      "A standout building set for collectors, gift buyers, and anyone hunting for a fun display piece.",
-    image: "images/lego-good-fortune-set.jpg",
-    fbUrl: "https://www.facebook.com/marketplace/item/1064221970107751",
-    keywords: ["lego", "good fortune", "lego set", "building set"],
-    tags: ["lego", "collectible", "display"]
-  },
-  {
-    id: "kidkraft-market",
-    category: "Kids",
-    title: "Kidkraft Fresh Farm Market Stand",
-    description:
-      "A larger-item listing with a family-friendly angle, great for broadening the shop mix beyond cards.",
-    image: "images/kidkraft-fresh-farm-market-stand.jpg",
-    fbUrl: "https://www.facebook.com/marketplace/item/978858158419038",
-    keywords: ["kidkraft", "fresh farm", "market stand", "farm stand", "kids stand"],
-    tags: ["kids", "play", "furniture"]
-  },
-  {
-    id: "pikachu-squishmallow",
-    category: "Collectibles",
-    title: 'Pikachu Squishmallow 20"',
-    description:
-      "A recognizable fan-favorite plush listing that fits the collectible and pop-culture side of the brand.",
-    image: "images/pikachu-squishmallow-20-inch.jpg",
-    fbUrl: "https://www.facebook.com/marketplace/item/839622288569049",
-    keywords: ["pikachu", "squishmallow", "plush", "pokemon", "20 inch pikachu"],
-    tags: ["pokemon", "plush", "collectible"]
-  },
-  {
-    id: "pikachu-bundle",
-    category: "Bundle",
-    title: "Pikachu & Fresh Market Stand Bundle",
-    description:
-      "A bundle card for a combined offer, useful when you want a playful featured package on the storefront.",
-    image: "images/pikachu-fresh-market-stand-bundle.jpg",
-    fbUrl: "https://www.facebook.com/marketplace/item/958655823830399",
-    keywords: ["bundle", "pikachu bundle", "fresh market bundle", "market stand bundle", "combo"],
-    tags: ["bundle", "pokemon", "kids"]
-  }
-];
+const STORAGE_KEY = "houston-tcg-copilot-session-id";
 
 const grid = document.getElementById("product-grid");
 const template = document.getElementById("product-card-template");
@@ -87,17 +15,103 @@ const heroChatTrigger = document.getElementById("hero-chat-trigger");
 const chatMessages = document.getElementById("chat-messages");
 const chatForm = document.getElementById("chat-form");
 const chatInput = document.getElementById("chat-input");
+const chatStatus = document.querySelector(".chat-status");
 const quickPromptsToggle = document.getElementById("quick-prompts-toggle");
 const promptChipsWrap = document.getElementById("prompt-chips");
 const promptChips = document.querySelectorAll(".prompt-chip");
 
 const starterMessages = [
-  `Hi! I'm ${storeProfile.assistantName}. Ask me about inventory, bundles, how to buy on Facebook Marketplace, or which item fits what you're looking for.`,
-  `Try questions like "show me the MTG item", "do you have a bundle?", or "how do I buy the iPhone?"`
+  {
+    html:
+      "Hi! I’m the Houston TCG AI Sales and Support Copilot. Ask about products, gifts, bundles, pickup, shipping, payments, or Facebook Marketplace purchase help."
+  },
+  {
+    html:
+      "Try questions like <strong>best gift for a Pokemon fan</strong>, <strong>show me something collectible</strong>, or <strong>how do I buy on Facebook Marketplace?</strong>"
+  }
 ];
+
+let sessionId = loadSessionId();
+let isChatBusy = false;
+
+function loadSessionId() {
+  const existing = window.localStorage.getItem(STORAGE_KEY);
+  if (existing) {
+    return existing;
+  }
+
+  const generated =
+    window.crypto && "randomUUID" in window.crypto
+      ? window.crypto.randomUUID()
+      : `session-${Date.now()}`;
+  window.localStorage.setItem(STORAGE_KEY, generated);
+  return generated;
+}
+
+function setChatStatus(text, mode = "ready") {
+  chatStatus.textContent = text;
+  chatStatus.dataset.mode = mode;
+}
+
+function normalizeProducts(payload) {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (payload && Array.isArray(payload.products)) {
+    return payload.products;
+  }
+
+  return [];
+}
+
+async function fetchCatalog() {
+  const apiUrl = `${APP_CONFIG.apiBase}/api/products`;
+
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error(`Product API returned ${response.status}`);
+    }
+
+    const payload = await response.json();
+    setChatStatus("AI Copilot Live", "ready");
+    return normalizeProducts(payload);
+  } catch (error) {
+    setChatStatus("Catalog Fallback", "warning");
+    const fallbackResponse = await fetch(APP_CONFIG.fallbackCatalogPath);
+    if (!fallbackResponse.ok) {
+      throw new Error("Unable to load product catalog.");
+    }
+
+    const fallbackPayload = await fallbackResponse.json();
+    return normalizeProducts(fallbackPayload);
+  }
+}
+
+function logFeedback(eventType, productId = null, metadata = {}) {
+  return fetch(`${APP_CONFIG.apiBase}/api/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      session_id: sessionId,
+      event_type: eventType,
+      product_id: productId,
+      metadata
+    }),
+    keepalive: true
+  }).catch(() => undefined);
+}
+
+function attachProductTracking(link, productId, source) {
+  link.addEventListener("click", () => {
+    logFeedback("product_click", productId, { source });
+  });
+}
 
 function createProductCard(product) {
   const fragment = template.content.cloneNode(true);
+  const card = fragment.querySelector(".product-card");
   const image = fragment.querySelector(".product-image");
   const fallback = fragment.querySelector(".image-fallback");
   const category = fragment.querySelector(".product-category");
@@ -105,7 +119,8 @@ function createProductCard(product) {
   const description = fragment.querySelector(".product-description");
   const link = fragment.querySelector(".purchase-link");
 
-  image.src = product.image;
+  card.dataset.productId = product.id;
+  image.src = product.image_url;
   image.alt = product.title;
   image.addEventListener("load", () => {
     fallback.hidden = true;
@@ -118,176 +133,109 @@ function createProductCard(product) {
   category.textContent = product.category;
   title.textContent = product.title;
   description.textContent = product.description;
-  link.href = product.fbUrl;
+  link.href = product.listing_url;
   link.setAttribute("aria-label", `Purchase ${product.title} on Facebook Marketplace`);
+  attachProductTracking(link, product.id, "grid");
 
   return fragment;
 }
 
-function renderProducts() {
-  products.forEach((product) => {
-    grid.appendChild(createProductCard(product));
-  });
+function renderCatalogNotice(message) {
+  const notice = document.createElement("article");
+  notice.className = "catalog-notice";
+  notice.innerHTML = `<p>${message}</p>`;
+  grid.appendChild(notice);
 }
 
-function normalizeText(text) {
-  return text.toLowerCase().replace(/[^\w\s"]/g, " ").replace(/\s+/g, " ").trim();
-}
+async function renderProducts() {
+  grid.innerHTML = "";
 
-function detectProducts(message) {
-  const normalized = normalizeText(message);
-
-  return products.filter((product) => {
-    if (normalized.includes(product.title.toLowerCase())) {
-      return true;
-    }
-
-    return product.keywords.some((keyword) => normalized.includes(keyword));
-  });
-}
-
-function detectIntent(message) {
-  const normalized = normalizeText(message);
-
-  const intents = {
-    buy: ["buy", "purchase", "order", "get it", "marketplace", "link", "listing"],
-    bundle: ["bundle", "combo", "together", "pair"],
-    inventory: ["show", "have", "available", "inventory", "items", "stock", "sell"],
-    shipping: ["ship", "shipping", "deliver", "delivery", "pickup", "meet", "meetup", "local"],
-    payment: ["pay", "payment", "cash", "zelle", "cash app"],
-    greeting: ["hi", "hello", "hey"],
-    help: ["help", "what can you do", "how does this work"],
-    categoryMtg: ["mtg", "magic", "commander", "cards", "tcg"],
-    categoryPokemon: ["pokemon", "pikachu", "plush"],
-    categoryKids: ["kids", "toy", "market stand", "kidkraft"],
-    categoryElectronics: ["iphone", "phone", "apple", "electronics"]
-  };
-
-  return Object.entries(intents)
-    .filter(([, keywords]) => keywords.some((keyword) => normalized.includes(keyword)))
-    .map(([intent]) => intent);
-}
-
-function formatProductLine(product) {
-  return `<strong>${product.title}</strong> <a href="${product.fbUrl}" target="_blank" rel="noopener noreferrer">Open listing</a>`;
-}
-
-function buildInventoryReply(selectedProducts) {
-  if (selectedProducts.length === 1) {
-    const product = selectedProducts[0];
-    return `I found the match: ${formatProductLine(product)}. ${product.description}`;
-  }
-
-  if (selectedProducts.length > 1) {
-    return `Here are the closest matches:<br>${selectedProducts
-      .map((product) => `• ${formatProductLine(product)}`)
-      .join("<br>")}`;
-  }
-
-  return `Right now the site features ${products.length} items: ${products
-    .map((product) => product.title)
-    .join(", ")}. Tell me a product name or category and I’ll point you to the right listing.`;
-}
-
-function buildPurchaseReply(selectedProducts) {
-  if (selectedProducts.length > 0) {
-    return selectedProducts
-      .map(
-        (product) =>
-          `You can buy <strong>${product.title}</strong> here: <a href="${product.fbUrl}" target="_blank" rel="noopener noreferrer">click to open the Facebook Marketplace listing</a>.`
-      )
-      .join("<br><br>");
-  }
-
-  return `Choose any product card or tell me which item you want, and I’ll send you to the exact Facebook Marketplace listing.`;
-}
-
-function buildShippingReply() {
-  return `${storeProfile.businessName} can be described as offering ${storeProfile.fulfillment.join(
-    ", "
-  )}. Update this wording in <code>storeProfile</code> if you want the bot to reflect your exact pickup and shipping rules.`;
-}
-
-function buildPaymentReply() {
-  return `Typical payment options listed by the bot are ${storeProfile.paymentOptions.join(
-    ", "
-  )}. You can customize those in <code>storeProfile</code> inside <code>app.js</code>.`;
-}
-
-function buildCategoryReply(intents) {
-  if (intents.includes("categoryMtg")) {
-    return buildInventoryReply(products.filter((product) => product.category === "MTG"));
-  }
-
-  if (intents.includes("categoryElectronics")) {
-    return buildInventoryReply(products.filter((product) => product.category === "Electronics"));
-  }
-
-  if (intents.includes("categoryKids")) {
-    return buildInventoryReply(
-      products.filter((product) => ["Kids", "Bundle"].includes(product.category))
+  try {
+    const products = await fetchCatalog();
+    products.forEach((product) => {
+      grid.appendChild(createProductCard(product));
+    });
+  } catch (error) {
+    renderCatalogNotice(
+      "The storefront catalog could not load right now. Start the backend API or refresh to try again."
     );
   }
-
-  if (intents.includes("categoryPokemon")) {
-    return buildInventoryReply(
-      products.filter((product) => product.tags.includes("pokemon"))
-    );
-  }
-
-  return "";
 }
 
-function generateBotReply(message) {
-  const intents = detectIntent(message);
-  const selectedProducts = detectProducts(message);
-  const categoryReply = buildCategoryReply(intents);
+function createChatProductCard(item) {
+  const product = item.product;
+  const wrapper = document.createElement("article");
+  wrapper.className = "chat-product-card";
 
-  if (intents.includes("greeting")) {
-    return `Hi! I can help visitors browse ${storeProfile.businessName} listings, find product matches, and jump straight to Facebook Marketplace purchase links.`;
-  }
+  const title = document.createElement("h4");
+  title.className = "chat-product-title";
+  title.textContent = product.title;
 
-  if (intents.includes("help")) {
-    return `You can ask about product names, bundles, MTG items, the iPhone, pickup, shipping, payment methods, or how to buy through Facebook Marketplace.`;
-  }
+  const meta = document.createElement("p");
+  meta.className = "chat-product-meta";
+  const reason =
+    item.reason || item.explanation || `Relevant match score: ${item.score.toFixed(3)}`;
+  meta.textContent = `${product.category} • ${reason}`;
 
-  if (selectedProducts.length > 0 && intents.includes("buy")) {
-    return buildPurchaseReply(selectedProducts);
-  }
+  const status = document.createElement("p");
+  status.className = "chat-product-status";
+  status.textContent = product.availability;
 
-  if (selectedProducts.length > 0) {
-    return buildInventoryReply(selectedProducts);
-  }
+  const link = document.createElement("a");
+  link.className = "chat-product-link";
+  link.href = product.listing_url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = "Open Facebook Marketplace listing";
+  attachProductTracking(link, product.id, "chat");
 
-  if (intents.includes("bundle")) {
-    return buildInventoryReply(products.filter((product) => product.category === "Bundle"));
-  }
-
-  if (intents.includes("shipping")) {
-    return buildShippingReply();
-  }
-
-  if (intents.includes("payment")) {
-    return buildPaymentReply();
-  }
-
-  if (intents.includes("inventory") || categoryReply) {
-    return categoryReply || buildInventoryReply([]);
-  }
-
-  if (intents.includes("buy")) {
-    return buildPurchaseReply([]);
-  }
-
-  return `I’m not fully sure which item you mean yet. Try asking for "the iPhone", "the MTG item", "the Pikachu bundle", or "how do I buy on Facebook Marketplace?"`;
+  wrapper.append(title, meta, status, link);
+  return wrapper;
 }
 
-function appendMessage(role, html) {
+function appendMessage(role, payload) {
   const message = document.createElement("div");
   message.className = `chat-bubble ${role}`;
-  message.innerHTML = `<p>${html}</p>`;
+
+  if (payload.loading) {
+    message.classList.add("loading");
+  }
+
+  const content = document.createElement("div");
+  content.className = "chat-message-content";
+  if (payload.html) {
+    content.innerHTML = `<p>${payload.html}</p>`;
+  }
+  message.appendChild(content);
+
+  if (payload.products && payload.products.length > 0) {
+    const productGrid = document.createElement("div");
+    productGrid.className = "chat-response-products";
+    payload.products.forEach((item) => {
+      productGrid.appendChild(createChatProductCard(item));
+    });
+    message.appendChild(productGrid);
+  }
+
+  if (payload.nextAction) {
+    const nextAction = document.createElement("p");
+    nextAction.className = "chat-next-action";
+    nextAction.textContent = payload.nextAction;
+    message.appendChild(nextAction);
+  }
+
+  if (payload.policyHits && payload.policyHits.length > 0) {
+    const policies = document.createElement("p");
+    policies.className = "chat-hint";
+    policies.textContent = `Grounded in: ${payload.policyHits
+      .map((item) => item.title)
+      .join(", ")}`;
+    message.appendChild(policies);
+  }
+
   chatMessages.appendChild(message);
   chatMessages.scrollTop = chatMessages.scrollHeight;
+  return message;
 }
 
 function setChatOpen(isOpen) {
@@ -308,22 +256,73 @@ function setQuickPromptsExpanded(isExpanded) {
   quickPromptsToggle.textContent = isExpanded ? "Minimize" : "Show";
 }
 
-function handleUserMessage(message) {
-  const cleanMessage = message.trim();
+function renderStarterMessages() {
+  starterMessages.forEach((message) => appendMessage("bot", message));
+}
 
-  if (!cleanMessage) {
+async function sendChatRequest(message) {
+  const response = await fetch(`${APP_CONFIG.apiBase}/api/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message,
+      session_id: sessionId,
+      limit: APP_CONFIG.productLimit
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Chat API returned ${response.status}`);
+  }
+
+  return response.json();
+}
+
+async function handleUserMessage(message) {
+  const cleanMessage = message.trim();
+  if (!cleanMessage || isChatBusy) {
     return;
   }
 
-  appendMessage("user", cleanMessage);
+  setChatOpen(true);
+  appendMessage("user", { html: cleanMessage });
+  const loadingBubble = appendMessage("bot", {
+    html: "Thinking through your request and checking inventory...",
+    loading: true
+  });
 
-  window.setTimeout(() => {
-    appendMessage("bot", generateBotReply(cleanMessage));
-  }, 280);
+  isChatBusy = true;
+  setChatStatus("Responding...", "loading");
+
+  try {
+    const payload = await sendChatRequest(cleanMessage);
+    sessionId = payload.session_id || sessionId;
+    window.localStorage.setItem(STORAGE_KEY, sessionId);
+    loadingBubble.remove();
+
+    appendMessage("bot", {
+      html: payload.answer,
+      nextAction: payload.next_action,
+      products: payload.products || [],
+      policyHits: payload.policy_hits || []
+    });
+
+    setChatStatus(`Intent: ${payload.intent}`, payload.fallback ? "warning" : "ready");
+  } catch (error) {
+    loadingBubble.remove();
+    appendMessage("bot", {
+      html:
+        "The AI copilot backend is unavailable right now. Start the FastAPI service to enable live recommendations, policy answers, and analytics logging."
+    });
+    setChatStatus("API Offline", "error");
+  } finally {
+    isChatBusy = false;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
 }
 
 function initializeChat() {
-  starterMessages.forEach((message) => appendMessage("bot", message));
+  renderStarterMessages();
 
   chatFab.addEventListener("click", () => {
     const shouldOpen = chatShell.classList.contains("is-collapsed");
@@ -345,16 +344,14 @@ function initializeChat() {
 
   chatForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    setChatOpen(true);
-    handleUserMessage(chatInput.value);
+    const value = chatInput.value;
     chatInput.value = "";
-    chatInput.focus();
+    handleUserMessage(value);
   });
 
   promptChips.forEach((chip) => {
     chip.addEventListener("click", () => {
       const prompt = chip.dataset.prompt || "";
-      setChatOpen(true);
       handleUserMessage(prompt);
     });
   });
