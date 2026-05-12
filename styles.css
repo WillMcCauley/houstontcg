@@ -218,6 +218,20 @@ code {
   gap: 1.2rem;
 }
 
+.catalog-notice {
+  grid-column: 1 / -1;
+  padding: 1.3rem 1.4rem;
+  border: 1px solid rgba(197, 163, 255, 0.14);
+  border-radius: var(--radius-lg);
+  background: rgba(21, 14, 31, 0.92);
+  color: var(--muted);
+}
+
+.catalog-notice p {
+  margin: 0;
+  line-height: 1.7;
+}
+
 .product-card {
   grid-column: span 4;
   display: grid;
@@ -459,6 +473,21 @@ code {
   font-weight: 800;
 }
 
+.chat-status[data-mode="loading"] {
+  background: rgba(255, 205, 96, 0.12);
+  color: #ffdd8c;
+}
+
+.chat-status[data-mode="warning"] {
+  background: rgba(255, 159, 159, 0.12);
+  color: #ffb1b1;
+}
+
+.chat-status[data-mode="error"] {
+  background: rgba(255, 119, 119, 0.16);
+  color: #ffbaba;
+}
+
 .chat-header-actions {
   display: flex;
   align-items: center;
@@ -509,6 +538,14 @@ code {
   box-shadow: 0 12px 26px rgba(24, 34, 47, 0.07);
 }
 
+.chat-bubble.loading {
+  opacity: 0.78;
+}
+
+.chat-message-content p {
+  margin: 0;
+}
+
 .chat-bubble p {
   margin: 0;
 }
@@ -531,6 +568,62 @@ code {
   border-bottom-left-radius: 8px;
   background: #181022;
   color: var(--ink);
+}
+
+.chat-response-products {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.chat-product-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(197, 163, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(34, 22, 52, 0.66);
+}
+
+.chat-product-title {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.chat-product-meta,
+.chat-product-status,
+.chat-next-action,
+.chat-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.chat-product-link {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.15rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(139, 61, 255, 0.18), rgba(177, 92, 255, 0.28));
+  color: #fffaff;
+  font-weight: 800;
+}
+
+.chat-next-action {
+  margin-top: 0.8rem;
+  color: #d9c5ff;
+}
+
+.chat-hint {
+  margin-top: 0.65rem;
+  font-size: 0.82rem;
+  color: #ac94d1;
 }
 
 .chat-form {
