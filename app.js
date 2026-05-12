@@ -1,5 +1,5 @@
 const APP_CONFIG = {
-  apiBase: window.HOUSTON_TCG_API_BASE || "http://127.0.0.1:8001",
+  apiBase: window.HOUSTON_TCG_API_BASE || "https://houstontcg.onrender.com",
   fallbackCatalogPath: "backend/data/products.json",
   productLimit: 3
 };
