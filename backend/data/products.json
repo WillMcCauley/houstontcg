@@ -1,0 +1,83 @@
+[
+  {
+    "id": "outlaws-kit",
+    "title": "Outlaws of Thunder Junction Deluxe Commander Kit",
+    "category": "MTG",
+    "description": "Premium Magic: The Gathering Commander product for players and collectors who want a higher-end Outlaws of Thunder Junction pickup.",
+    "tags": ["cards", "collectible", "tcg", "commander"],
+    "keywords": ["mtg", "magic", "magic the gathering", "outlaws", "thunder junction", "commander", "deluxe commander kit"],
+    "price": null,
+    "listing_url": "https://www.facebook.com/marketplace/item/1216163437111287",
+    "image_url": "images/outlaws-of-thunder-junction-deluxe-commander-kit.jpeg",
+    "availability": "Listed on Facebook Marketplace. Check the live listing or message through Marketplace for the latest status.",
+    "bundle_options": ["Can be paired with other collectible listings on request."]
+  },
+  {
+    "id": "iphone-14",
+    "title": "iPhone 14 128GB - Black",
+    "category": "Electronics",
+    "description": "High-demand Apple smartphone listing for buyers looking for a clean 128GB iPhone option.",
+    "tags": ["electronics", "phone", "apple"],
+    "keywords": ["iphone", "iphone 14", "phone", "apple", "128gb", "black iphone"],
+    "price": null,
+    "listing_url": "https://www.facebook.com/marketplace/item/1285667683751650",
+    "image_url": "images/iphone-14-128gb-black.webp",
+    "availability": "Listed on Facebook Marketplace. Availability may change based on direct buyer messages.",
+    "bundle_options": ["Ask about combining with another listing for a multi-item deal."]
+  },
+  {
+    "id": "lego-good-fortune",
+    "title": "Lego Good Fortune Set",
+    "category": "Lego",
+    "description": "Giftable Lego set that works well for display, collecting, or a fun themed present.",
+    "tags": ["lego", "collectible", "display"],
+    "keywords": ["lego", "good fortune", "lego set", "building set"],
+    "price": null,
+    "listing_url": "https://www.facebook.com/marketplace/item/1064221970107751",
+    "image_url": "images/lego-good-fortune-set.jpg",
+    "availability": "Listed on Facebook Marketplace. Please confirm current availability in Marketplace chat.",
+    "bundle_options": ["Can be recommended as a collectible-friendly gift option."]
+  },
+  {
+    "id": "kidkraft-market",
+    "title": "Kidkraft Fresh Farm Market Stand",
+    "category": "Kids",
+    "description": "Play-focused item for families shopping for imaginative kids furniture or toy market setups.",
+    "tags": ["kids", "play", "furniture"],
+    "keywords": ["kidkraft", "fresh farm", "market stand", "farm stand", "kids stand"],
+    "price": null,
+    "listing_url": "https://www.facebook.com/marketplace/item/978858158419038",
+    "image_url": "images/kidkraft-fresh-farm-market-stand.jpg",
+    "availability": "Listed on Facebook Marketplace. Pickup coordination is recommended due to item size.",
+    "bundle_options": ["Matches naturally with the Pikachu & Fresh Market Stand Bundle listing."]
+  },
+  {
+    "id": "pikachu-squishmallow",
+    "title": "Pikachu Squishmallow 20\"",
+    "category": "Collectibles",
+    "description": "Pokemon plush listing with strong appeal for fans, gift buyers, and casual collectors.",
+    "tags": ["pokemon", "plush", "collectible"],
+    "keywords": ["pikachu", "squishmallow", "plush", "pokemon", "20 inch pikachu"],
+    "price": null,
+    "listing_url": "https://www.facebook.com/marketplace/item/839622288569049",
+    "image_url": "images/pikachu-squishmallow-20-inch.jpg",
+    "availability": "Listed on Facebook Marketplace. Reach out through Marketplace for the latest status.",
+    "bundle_options": ["Can be compared against the Pikachu & Fresh Market Stand Bundle for value."]
+  },
+  {
+    "id": "pikachu-bundle",
+    "title": "Pikachu & Fresh Market Stand Bundle",
+    "category": "Bundle",
+    "description": "Bundle listing combining Pokemon appeal with a kid-friendly market stand theme.",
+    "tags": ["bundle", "pokemon", "kids"],
+    "keywords": ["bundle", "pikachu bundle", "fresh market bundle", "market stand bundle", "combo"],
+    "price": null,
+    "listing_url": "https://www.facebook.com/marketplace/item/958655823830399",
+    "image_url": "images/pikachu-fresh-market-stand-bundle.jpg",
+    "availability": "Listed on Facebook Marketplace. Confirm status in Marketplace before planning pickup.",
+    "bundle_options": [
+      "Includes a bundle-oriented option for buyers who want multiple themed items together.",
+      "Alternative comparison items: Pikachu Squishmallow 20\" and Kidkraft Fresh Farm Market Stand."
+    ]
+  }
+]

@@ -1,0 +1,72 @@
+{
+  "store_profile": {
+    "business_name": "Houston TCG",
+    "assistant_name": "Houston TCG AI Sales and Support Copilot",
+    "city": "Houston",
+    "state": "Texas",
+    "payment_methods": ["Cash", "Zelle", "Cash App", "Facebook Marketplace checkout when available"],
+    "pickup_options": ["Local meetup", "Porch pickup when arranged", "Message through Facebook Marketplace to coordinate"],
+    "shipping_rules": [
+      "Shipping can be arranged on selected items.",
+      "Larger items may be better suited for local pickup.",
+      "Confirm packaging, timing, and cost in Marketplace chat before purchase."
+    ],
+    "support_contact": "Primary support channel is Facebook Marketplace messaging on the live listing."
+  },
+  "prompt_templates": {
+    "sales": "Answer briefly, ground recommendations in catalog data, and end with a clear next action.",
+    "policy": "Ground policy answers in the stored business rules and suggest the right customer next step.",
+    "fallback": "Be honest about uncertainty, then guide the buyer toward a more specific request."
+  },
+  "knowledge": [
+    {
+      "id": "payment-methods",
+      "topic": "payment",
+      "title": "Payment Methods",
+      "content": "Houston TCG currently supports Cash, Zelle, Cash App, and Facebook Marketplace checkout when that option is active on the listing. Buyers should confirm the preferred payment method in Marketplace chat before finalizing pickup or shipping.",
+      "tags": ["payment", "pay", "cash", "zelle", "cashapp", "checkout"]
+    },
+    {
+      "id": "pickup-options",
+      "topic": "pickup",
+      "title": "Pickup Options",
+      "content": "Houston TCG offers local meetup and porch pickup when arranged. The best path is to message through the Facebook Marketplace listing and coordinate a time, location, and item handoff details there.",
+      "tags": ["pickup", "meet", "local", "meetup", "porch"]
+    },
+    {
+      "id": "shipping-rules",
+      "topic": "shipping",
+      "title": "Shipping Guidance",
+      "content": "Shipping can be arranged on selected items, especially smaller collectibles. Larger items may be better suited for local pickup. Buyers should confirm shipping cost, packaging, and timeline in Marketplace chat before paying.",
+      "tags": ["shipping", "ship", "delivery", "mail", "send"]
+    },
+    {
+      "id": "marketplace-purchase-help",
+      "topic": "marketplace",
+      "title": "How Facebook Marketplace Purchasing Works",
+      "content": "To purchase through Facebook Marketplace, open the listing, review the item details, and message the seller or use checkout if the listing supports it. Confirm availability, payment method, and pickup or shipping arrangements before completing the transaction.",
+      "tags": ["marketplace", "buy", "purchase", "checkout", "listing", "facebook"]
+    },
+    {
+      "id": "bundle-support",
+      "topic": "bundle",
+      "title": "Bundle Support",
+      "content": "Houston TCG can guide buyers toward the bundle listing or help compare a bundle against separate listings. Bundle shoppers should ask whether the combined item set or pricing is still available through Marketplace chat.",
+      "tags": ["bundle", "combo", "pair", "together"]
+    },
+    {
+      "id": "availability-policy",
+      "topic": "availability",
+      "title": "Availability Policy",
+      "content": "Availability can change quickly on Facebook Marketplace. The best practice is to open the live listing and confirm the item is still available by messaging through Marketplace before traveling or sending payment.",
+      "tags": ["available", "availability", "still", "sold", "status"]
+    },
+    {
+      "id": "support-contact",
+      "topic": "support",
+      "title": "Support and Contact Rules",
+      "content": "The main support and transaction channel is Facebook Marketplace messaging on the live listing. Use that thread for product questions, purchase coordination, payment confirmation, and pickup or shipping details.",
+      "tags": ["support", "contact", "help", "message", "seller"]
+    }
+  ]
+}
