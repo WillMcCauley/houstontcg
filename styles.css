@@ -254,7 +254,9 @@ code {
 .product-content {
   display: grid;
   gap: 0.95rem;
+  align-content: start;
   padding: 1.35rem;
+  min-height: 100%;
 }
 
 .product-category {
@@ -273,7 +275,7 @@ code {
 
 .purchase-link {
   width: fit-content;
-  margin-top: 0.25rem;
+  margin-top: auto;
   padding: 0.95rem 1.1rem;
   border-radius: 16px;
   font-weight: 800;
@@ -365,13 +367,16 @@ code {
 
 .chat-fab {
   border: 0;
-  min-height: 58px;
-  padding: 0.95rem 1.35rem;
+  min-height: 46px;
+  max-width: 220px;
+  padding: 0.7rem 1rem;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--accent), #b15cff);
   color: #fffaff;
   font: inherit;
+  font-size: 0.92rem;
   font-weight: 800;
+  line-height: 1.2;
   cursor: pointer;
   box-shadow: 0 18px 40px rgba(139, 61, 255, 0.28);
   transition: transform 180ms ease, box-shadow 180ms ease;
@@ -626,9 +631,9 @@ code {
 
   .floating-chat {
     right: 0.5rem;
-    left: 0.5rem;
+    left: auto;
     bottom: 0.5rem;
-    justify-items: stretch;
+    justify-items: end;
   }
 
   .chat-shell {
@@ -644,8 +649,7 @@ code {
   .button,
   .top-cta,
   .purchase-link,
-  .prompt-chip,
-  .chat-fab {
+  .prompt-chip {
     width: 100%;
   }
 
