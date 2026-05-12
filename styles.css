@@ -52,7 +52,7 @@ code {
 .page-shell {
   width: min(1180px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: 1rem 0 4rem;
+  padding: 1rem 0 8.5rem;
 }
 
 .hero {
@@ -628,6 +628,7 @@ code {
 @media (max-width: 720px) {
   .page-shell {
     width: min(100% - 1rem, 1180px);
+    padding-bottom: 7.5rem;
   }
 
   .hero {
