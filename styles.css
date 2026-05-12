@@ -312,6 +312,7 @@ code {
   display: grid;
   justify-items: end;
   gap: 0.85rem;
+  pointer-events: none;
 }
 
 .quick-prompts {
@@ -394,6 +395,7 @@ code {
   cursor: pointer;
   box-shadow: 0 18px 40px rgba(139, 61, 255, 0.28);
   transition: transform 180ms ease, box-shadow 180ms ease;
+  pointer-events: auto;
 }
 
 .chat-fab:hover {
@@ -416,6 +418,7 @@ code {
     opacity 180ms ease,
     transform 180ms ease,
     visibility 180ms ease;
+  pointer-events: auto;
 }
 
 .chat-shell.is-collapsed {
